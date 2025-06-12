@@ -1,16 +1,19 @@
-import React from 'react';
+// src/components/LoginForm.jsx (or wherever your LoginForm is located)
+
+import React, { useContext } from 'react'; // <--- ADD useContext
 import { useLoginUser } from '../hooks/useLoginUser.js';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { ToastContainer } from 'react-toastify';
+import { ToastContainer, toast } from 'react-toastify'; // <--- ADD toast if you want to use it
 import 'react-toastify/dist/ReactToastify.css';
 import logo from '../assets/logo.png';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../auth/authProvider'; // <--- IMPORTANT: Ensure this path is correct!
 
 export default function LoginForm() {
-    // Destructure `isLoading` but intentionally omit `error` since it's not used
     const { mutate, isLoading } = useLoginUser();
-    const navigate = useNavigate(); // Initialize useNavigate here
+    const navigate = useNavigate();
+    const { login } = useContext(AuthContext); // <--- GET THE LOGIN FUNCTION FROM AUTHCONTEXT
 
     const validationSchema = Yup.object({
         email: Yup.string().email("Invalid email").required("Email is required"),
@@ -27,23 +30,27 @@ export default function LoginForm() {
         validationSchema,
         onSubmit: (values) => {
             mutate(values, {
-                onSuccess: () => {
+                // The 'data' argument here will contain the successful response from your backend.
+                // Assuming your backend returns { user: { fullName: "...", role: "...", ... }, token: "..." }
+                onSuccess: (data) => { // <--- RECEIVE THE DATA HERE
+                    console.log("LoginForm: Login successful. Calling AuthContext login with user:", data.user); // <--- DEBUG LOG
+                    login(data.user, data.token); // <--- PASS THE USER AND TOKEN TO AUTHCONTEXT'S LOGIN
+                    toast.success("Login successful!"); // <--- Optional: show success toast
                     setTimeout(() => {
-                        navigate("/"); // `Maps` is now defined
+                        navigate("/");
                     }, 300);
                 },
                 onError: (error) => {
-                    // Handle login error, e.g., show an error message
                     console.error("Login failed:", error);
-                    // You might want to display this error to the user,
-                    // for example, using a toast notification:
-                    // toast.error(error.message || "Login failed. Please check your credentials.");
+                    // Use optional chaining for error.response.data.message for more specific errors
+                    const errorMessage = error.response?.data?.message || error.message || "Login failed. Please check your credentials.";
+                    toast.error(errorMessage); // Show error to user
                 },
             });
         },
     });
 
-
+    // ... (rest of your LoginForm component JSX remains the same)
     return (
         <div className="flex flex-col lg:flex-row h-screen bg-gray-50 items-center justify-center px-5 gap-8">
             {/* Left Side */}

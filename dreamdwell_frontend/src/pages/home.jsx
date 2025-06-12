@@ -1,10 +1,25 @@
-
 import Navbar from "../layouts/navbar.jsx";
 import Footer from "../layouts/footer.jsx";
-import PopularDestinations from "../pages/destination.jsx";
 import Newsletter from "./Newsletter.jsx";
 import bkg from "../assets/2Q.png";
-import { FaSearch } from "react-icons/fa";
+// Import all necessary icons
+import { FaSearch, FaUsers, FaKey, FaCheckCircle, FaClock, FaShieldAlt, FaCreditCard } from "react-icons/fa";
+import { Link } from "react-router-dom";
+import { properties } from "../data/property_data.js";
+
+// Component to display a single property card
+function PropertyCard({ imageUrl, title, location, price }) {
+    return (
+        <div className="bg-white rounded-lg shadow-md overflow-hidden transform transition duration-300 hover:scale-105">
+            <img src={imageUrl} alt={title} className="w-full h-48 object-cover" />
+            <div className="p-4">
+                <h3 className="text-lg font-semibold text-gray-800 mb-1">{title}</h3>
+                <p className="text-gray-600 text-sm mb-2">{location}</p>
+                <div className="text-lg font-bold text-[#002B5B]">${price}/night</div>
+            </div>
+        </div>
+    );
+}
 
 function SearchBar() {
     return (
@@ -25,6 +40,9 @@ function SearchBar() {
 }
 
 export default function Home() {
+    // Take the first 3 properties from your imported data to display as featured
+    const featuredProperties = properties.slice(0, 3);
+
     return (
         <div className="w-full overflow-x-hidden flex flex-col min-h-screen">
             {/* NAVBAR */}
@@ -85,15 +103,126 @@ export default function Home() {
                 </div>
             </section>
 
-            {/* POPULAR DESTINATIONS */}
-            <div className="px-4 md:px-20 mt-12">
-                <PopularDestinations />
+            {/* FEATURED PROPERTIES */}
+            <div className="px-4 md:px-20 mt-12 mb-12">
+                <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-3xl font-bold text-gray-800">Featured Properties</h2>
+                    {/* The "See All" button using Link to navigate to /properties */}
+                    <Link to="/properties" className="text-[#002B5B] hover:text-[#5599cc] font-semibold text-lg flex items-center group">
+                        See All
+                        <span className="ml-2 transition-transform group-hover:translate-x-1">
+                            &rarr;
+                        </span>
+                    </Link>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    {featuredProperties.map(property => (
+                        <PropertyCard
+                            key={property.id}
+                            imageUrl={property.images[0]} // Using the first image from the 'images' array
+                            title={property.title}
+                            location={property.location}
+                            price={property.price}
+                        />
+                    ))}
+                </div>
             </div>
 
-            {/* NEWSLETTER */}
-            <Newsletter />
+            {/* HOW IT WORKS / WHY CHOOSE US Section */}
+            <section className="py-16 bg-gray-50">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    {/* How It Works */}
+                    <div className="text-center mb-16">
+                        <h2 className="text-4xl font-extrabold text-[#002B5B] mb-4">
+                            How It Works
+                        </h2>
+                        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                            Simple steps to find your dream rental
+                        </p>
+                    </div>
 
-            {/* FOOTER */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-12 text-center mb-24">
+                        <div className="flex flex-col items-center">
+                            <div className="w-20 h-20 rounded-full bg-[#E0F2F7] flex items-center justify-center mb-6">
+                                <FaSearch className="text-4xl text-[#002B5B]" />
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-800 mb-2">Search</h3>
+                            <p className="text-gray-600 max-w-xs">
+                                Browse through thousands of verified properties using our advanced filters
+                            </p>
+                        </div>
+                        <div className="flex flex-col items-center">
+                            <div className="w-20 h-20 rounded-full bg-[#E0F2F7] flex items-center justify-center mb-6">
+                                <FaUsers className="text-4xl text-[#002B5B]" />
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-800 mb-2">Connect</h3>
+                            <p className="text-gray-600 max-w-xs">
+                                Get in touch with property owners and schedule viewings at your convenience
+                            </p>
+                        </div>
+                        <div className="flex flex-col items-center">
+                            <div className="w-20 h-20 rounded-full bg-[#E0F2F7] flex items-center justify-center mb-6">
+                                <FaKey className="text-4xl text-[#002B5B]" />
+                            </div>
+                            <h3 className="text-xl font-bold text-gray-800 mb-2">Rent</h3>
+                            <p className="text-gray-600 max-w-xs">
+                                Complete secure booking and move into your perfect space hassle-free
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* Why Choose DreamDwell */}
+                    <div className="text-center mb-16">
+                        <h2 className="text-4xl font-extrabold text-[#002B5B] mb-4">
+                            Why Choose DreamDwell
+                        </h2>
+                        <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+                            Experience the difference with our premium service
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 text-center pb-8">
+                        <div className="flex flex-col items-center p-4">
+                            <div className="w-16 h-16 rounded-full bg-[#E0F2F7] flex items-center justify-center mb-4">
+                                <FaCheckCircle className="text-3xl text-[#002B5B]" />
+                            </div>
+                            <h3 className="text-lg font-bold text-gray-800 mb-1">Verified Listings</h3>
+                            <p className="text-sm text-gray-600">
+                                All properties are thoroughly verified for authenticity and quality
+                            </p>
+                        </div>
+                        <div className="flex flex-col items-center p-4">
+                            <div className="w-16 h-16 rounded-full bg-[#E0F2F7] flex items-center justify-center mb-4">
+                                <FaClock className="text-3xl text-[#002B5B]" />
+                            </div>
+                            <h3 className="text-lg font-bold text-gray-800 mb-1">24/7 Support</h3>
+                            <p className="text-sm text-gray-600">
+                                Round-the-clock customer support for all your rental needs
+                            </p>
+                        </div>
+                        <div className="flex flex-col items-center p-4">
+                            <div className="w-16 h-16 rounded-full bg-[#E0F2F7] flex items-center justify-center mb-4">
+                                <FaShieldAlt className="text-3xl text-[#002B5B]" />
+                            </div>
+                            <h3 className="text-lg font-bold text-gray-800 mb-1">Easy Booking</h3>
+                            <p className="text-sm text-gray-600">
+                                Streamlined booking process with instant confirmations
+                            </p>
+                        </div>
+                        <div className="flex flex-col items-center p-4">
+                            <div className="w-16 h-16 rounded-full bg-[#E0F2F7] flex items-center justify-center mb-4">
+                                <FaCreditCard className="text-3xl text-[#002B5B]" />
+                            </div>
+                            <h3 className="text-lg font-bold text-gray-800 mb-1">Secure Payments</h3>
+                            <p className="text-sm text-gray-600">
+                                Safe and secure payment processing with multiple options
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <Newsletter />
             <Footer />
         </div>
     );

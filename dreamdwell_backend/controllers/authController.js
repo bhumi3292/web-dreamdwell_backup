@@ -1,8 +1,8 @@
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
-const jwt=require('jsonwebtoken')
+const jwt = require('jsonwebtoken'); // Ensure this is correctly imported
 
-// Register User
+// Register User (No changes needed here)
 exports.registerUser = async (req, res) => {
     const { fullName, email, phoneNumber, stakeholder, password, confirmPassword } = req.body;
 
@@ -30,7 +30,7 @@ exports.registerUser = async (req, res) => {
             fullName,
             email,
             phoneNumber,
-            role: stakeholder,
+            role: stakeholder, // Schema uses 'role', so map 'stakeholder' to 'role'
             password: hashedPassword
         });
 
@@ -43,7 +43,7 @@ exports.registerUser = async (req, res) => {
     }
 };
 
-// Login User
+// Login User (Modified to fix login and show Navbar elements)
 exports.loginUser = async (req, res) => {
     const { email, password } = req.body;
 
@@ -52,49 +52,58 @@ exports.loginUser = async (req, res) => {
     }
 
     try {
-        console.log("Finding user by email:", email);
+        console.log("Backend: Finding user by email:", email);
         const user = await User.findOne({ email });
-        console.log(user)
+        console.log("Backend: User found:", user ? user.email : "none"); // Log user email if found
 
         if (!user) {
-            console.log("User not found");
+            console.log("Backend: User not found for email:", email);
             return res.status(404).json({ success: false, message: "User not found" });
         }
 
-        console.log("Comparing passwords...");
-        const passwordMatch = bcrypt.compare(password, user.password);
+        console.log("Backend: Comparing passwords...");
+        // CRITICAL FIX: AWAIT the bcrypt.compare function
+        const passwordMatch = await bcrypt.compare(password, user.password);
 
         if (!passwordMatch) {
-            console.log("Password mismatch");
+            console.log("Backend: Password mismatch for user:", email);
             return res.status(401).json({ success: false, message: "Invalid credentials" });
         }
 
+        // Payload for JWT token (contains data for authentication middleware)
         const payload = {
             _id: user._id,
             email: user.email,
-            fullName: user.fullName,
-            stakeholder: user.role // role is where stakeholder is stored
+            // fullName is usually NOT in JWT payload, but 'role' (stakeholder) is crucial for middleware
+            stakeholder: user.role // Using 'role' from schema, which matches 'stakeholder' in payload
         };
-        console.log("Generating token...");
+        console.log("Backend: Generating token with payload:", payload);
 
         const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "7d" });
 
-        const { password: _, ...userData } = user.toObject();
+        // Prepare the user data to send to the frontend
+        // Exclude the password for security
+        const { password: _, ...userWithoutPassword } = user.toObject();
 
+        // Ensure userWithoutPassword contains fullName and role (from schema)
+        console.log("Backend: User data sent to frontend:", userWithoutPassword);
+
+        // CRITICAL FIX: Change 'data: userData' to 'user: userWithoutPassword'
+        // This matches what your frontend LoginForm expects.
         return res.status(200).json({
             success: true,
             message: "Login successful",
             token,
-            data: userData
+            user: userWithoutPassword // Frontend expects 'user' key
         });
 
     } catch (err) {
-        console.error("Login Error:", err);
+        console.error("Backend: Login Error:", err);
         return res.status(500).json({ success: false, message: "Server error" });
     }
 };
 
-// Get User ID by Email, Password, and Stakeholder
+// Get User ID by Email, Password, and Stakeholder (No changes needed here)
 exports.findUserIdByCredentials = async (req, res) => {
     const { email, password, stakeholder } = req.body;
 

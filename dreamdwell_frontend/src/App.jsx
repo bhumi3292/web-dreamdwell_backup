@@ -6,9 +6,12 @@ import ForgetPassword from "./pages/forgetPassword.jsx";
 import SignupPage from "./pages/signup.jsx";
 import Agreement from "./pages/agreement.jsx";
 import PropertyPage from "./pages/property.jsx";
+import AddProperty from "./pages/add_property.jsx";
 import Navbar from "./layouts/navbar.jsx";
 import AuthContextProvider from "./auth/authProvider";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ToastContainer } from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 import "./App.css";
 
 const queryClient = new QueryClient();
@@ -16,11 +19,10 @@ const queryClient = new QueryClient();
 function App() {
     return (
         <AuthContextProvider>
-        <QueryClientProvider client={queryClient}>
-            {/*<AuthContextProvider>*/}
+            <QueryClientProvider client={queryClient}>
                 <Router>
-                    <div className="pt-[65px]">
-                        <Navbar />
+                    <Navbar />
+                    <div className="pt-[70px]">
                         <Routes>
                             <Route path="/" element={<Home />} />
                             <Route path="/login" element={<Login />} />
@@ -28,11 +30,22 @@ function App() {
                             <Route path="/signup" element={<SignupPage />} />
                             <Route path="/agreement" element={<Agreement />} />
                             <Route path="/property" element={<PropertyPage />} />
+                            <Route path="/add-property" element={<AddProperty />} />
                         </Routes>
                     </div>
                 </Router>
-            {/*</AuthContextProvider>*/}
-        </QueryClientProvider>
+                <ToastContainer
+                    position="bottom-right"
+                    autoClose={3000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                />
+            </QueryClientProvider>
         </AuthContextProvider>
     );
 }
