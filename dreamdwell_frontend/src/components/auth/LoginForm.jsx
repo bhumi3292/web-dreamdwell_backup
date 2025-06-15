@@ -1,20 +1,17 @@
-// Inside src/components/LoginForm.jsx
-
-import React, { useContext } from 'react'; // Added useContext
-import { useLoginUser } from '../../hooks/useLoginUser.js'; // Corrected path assumption
+import React, { useContext } from 'react';
+import { useLoginUser } from '../../hooks/useLoginUser.js';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import { toast, ToastContainer } from 'react-toastify'; // Import toast
+import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import logo from '../assets/logo.png';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../../auth/AuthProvider.jsx'; // Corrected path assumption
+import { AuthContext } from '../../auth/AuthProvider.jsx';
 
 export default function LoginForm() {
-    // Destructure `mutate` and `isLoading`. `data` and `error` are handled in onSuccess/onError directly.
     const { mutate, isLoading } = useLoginUser();
     const navigate = useNavigate();
-    const { login } = useContext(AuthContext); // Get the login function from AuthContext
+    const { login } = useContext(AuthContext);
 
     const validationSchema = Yup.object({
         email: Yup.string().email("Invalid email").required("Email is required"),
@@ -31,28 +28,20 @@ export default function LoginForm() {
         validationSchema,
         onSubmit: (values) => {
             mutate(values, {
-                // This 'data' is the response object from your backend's successful login API call
                 onSuccess: (data) => {
-                    // Crucial: Ensure data.user and data.token exist and pass them to AuthContext's login
                     if (data?.user && data?.token) {
-                        login(data.user, data.token); // Pass user object (with fullName, role) and token
-                        console.log("LoginForm: Login successful. Calling AuthContext login with user:", data.user);
+                        login(data.user, data.token);
                         toast.success("Login successful!");
-
-                        // Navigate to home after a short delay for toast to show
                         setTimeout(() => {
                             navigate("/");
                         }, 300);
                     } else {
-                        // Handle cases where the backend response is successful but incomplete
                         console.error("LoginForm: Login successful, but response missing user object or token:", data);
                         toast.error("Login failed due to incomplete data from server. Please try again.");
                     }
                 },
-                // This 'error' is the error object from your failed API call
                 onError: (error) => {
                     console.error("LoginForm: Login failed:", error);
-                    // Extract a user-friendly error message from the response
                     const errorMessage = error.response?.data?.message || error.message || "Login failed. Please check your credentials.";
                     toast.error(errorMessage);
                 },
@@ -61,22 +50,20 @@ export default function LoginForm() {
     });
 
     return (
-        <div className="flex flex-col lg:flex-row h-screen bg-gray-50 items-center justify-center px-5 gap-8">
-            {/* Left Side */}
-            <div className="bg-[#002B5B] text-white p-8 rounded-xl w-[410px] max-w-md h-[520px] flex flex-col items-center justify-center text-center">
+        <div className="flex flex-col lg:flex-row h-screen w-full bg-gradient-to-br from-blue-50 to-blue-100 items-center justify-center px-6 gap-8">
+            <div className="bg-[#002B5B] text-white p-10 rounded-2xl w-full max-w-md h-[520px] flex flex-col items-center justify-center text-left">
                 <img src={logo} alt="DreamDwell Logo" className="w-28 animate-bounce mb-4" />
                 <h1 className="text-3xl font-bold mb-2">Welcome Back!</h1>
                 <p className="text-lg">Access your DreamDwell account</p>
             </div>
 
-            {/* Right Side - Login Form */}
-            <div className="bg-white p-8 rounded-xl shadow-md w-full max-w-md h-[520px] flex flex-col justify-center border border-gray-100">
-                <h2 className="text-2xl font-bold text-[#002B5B] mb-1">Login to DreamDwell</h2>
+            <div className="bg-white p-10 rounded-2xl shadow-xl w-full max-w-md h-[520px] flex flex-col justify-center border border-gray-100 text-left">
+                <h2 className="text-3xl font-bold text-[#002B5B] mb-2">Login to DreamDwell</h2>
                 <p className="text-gray-500 mb-6">Enter your credentials below</p>
 
-                <form onSubmit={formik.handleSubmit} className="flex flex-col gap-4">
+                <form onSubmit={formik.handleSubmit} className="flex flex-col gap-5">
                     <div>
-                        <label htmlFor="email" className="block font-medium text-left">Email</label>
+                        <label htmlFor="email" className="block font-medium mb-1">Email</label>
                         <input
                             id="email"
                             type="email"
@@ -84,7 +71,7 @@ export default function LoginForm() {
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
                             value={formik.values.email}
-                            className="w-full p-3 border border-gray-300 rounded bg-gray-100"
+                            className="w-full p-3 border border-gray-300 rounded-lg bg-gray-100"
                         />
                         {formik.touched.email && formik.errors.email && (
                             <p className="text-red-600 text-sm mt-1">{formik.errors.email}</p>
@@ -92,7 +79,7 @@ export default function LoginForm() {
                     </div>
 
                     <div>
-                        <label htmlFor="password" className="block font-medium text-left">Password</label>
+                        <label htmlFor="password" className="block font-medium mb-1">Password</label>
                         <input
                             id="password"
                             type="password"
@@ -100,7 +87,7 @@ export default function LoginForm() {
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
                             value={formik.values.password}
-                            className="w-full p-3 border border-gray-300 rounded bg-gray-100"
+                            className="w-full p-3 border border-gray-300 rounded-lg bg-gray-100"
                         />
                         {formik.touched.password && formik.errors.password && (
                             <p className="text-red-600 text-sm mt-1">{formik.errors.password}</p>
@@ -108,14 +95,14 @@ export default function LoginForm() {
                     </div>
 
                     <div>
-                        <label htmlFor="stakeholder" className="block font-medium text-left">Stakeholder</label>
+                        <label htmlFor="stakeholder" className="block font-medium mb-1">Stakeholder</label>
                         <select
                             id="stakeholder"
                             name="stakeholder"
                             onChange={formik.handleChange}
                             onBlur={formik.handleBlur}
                             value={formik.values.stakeholder}
-                            className="w-full p-3 border border-gray-300 rounded bg-gray-100"
+                            className="w-full p-3 border border-gray-300 rounded-lg bg-gray-100"
                         >
                             <option value="" disabled>Select Stakeholder</option>
                             <option value="Landlord">Landlord</option>
@@ -129,7 +116,7 @@ export default function LoginForm() {
                     <button
                         type="submit"
                         disabled={isLoading}
-                        className="bg-[#002B5B] text-white py-3 rounded font-bold hover:bg-blue-700 transition-all disabled:opacity-50"
+                        className="bg-[#002B5B] text-white py-3 rounded-lg font-bold hover:bg-blue-700 transition-all disabled:opacity-50"
                     >
                         {isLoading ? "Logging in..." : "Login"}
                     </button>

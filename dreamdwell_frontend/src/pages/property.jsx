@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Filter, ChevronDown } from 'lucide-react';
-import { PropertyCard } from '../properties/PropertyCard.jsx'; // Correct: import component from here
-import { properties } from '../data/property_data.js';           // Correct: import data from here
+import { PropertyCard } from '../properties/PropertyCard.jsx';
+import { properties } from '../data/property_data.js';
 
 
 

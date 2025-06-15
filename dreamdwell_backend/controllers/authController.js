@@ -1,6 +1,6 @@
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
-const jwt = require('jsonwebtoken'); // Ensure this is correctly imported
+const jwt = require('jsonwebtoken');
 
 // Register User (No changes needed here)
 exports.registerUser = async (req, res) => {
@@ -74,8 +74,7 @@ exports.loginUser = async (req, res) => {
         const payload = {
             _id: user._id,
             email: user.email,
-            // fullName is usually NOT in JWT payload, but 'role' (stakeholder) is crucial for middleware
-            stakeholder: user.role // Using 'role' from schema, which matches 'stakeholder' in payload
+            stakeholder: user.role
         };
         console.log("Backend: Generating token with payload:", payload);
 
@@ -103,7 +102,7 @@ exports.loginUser = async (req, res) => {
     }
 };
 
-// Get User ID by Email, Password, and Stakeholder (No changes needed here)
+// Get User ID by Email, Password, and Stakeholder
 exports.findUserIdByCredentials = async (req, res) => {
     const { email, password, stakeholder } = req.body;
 
