@@ -1,12 +1,14 @@
 const express = require('express');
 const router = express.Router();
+
+
 const {
     createCategory,
     getCategories,
     getCategoryById,
     updateCategory,
     deleteCategory
-} = require('../controllers/property/categoryController');
+} = require('../controllers/category/categoryController');
 // Assuming authenticateUser is a general authentication middleware.
 // If specific admin rights are needed, an additional isAdmin middleware might be used.
 const { authenticateUser } = require('../middlewares/authorizedUser');

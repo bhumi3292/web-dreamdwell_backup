@@ -1,8 +1,7 @@
 const express = require('express');
 const router = express.Router();
-
-// Correctly import the multer instance
-const upload = require('../middlewares/property/propertyMediaUpload');
+// Import uploadPropertyMedia from the correct path
+const { uploadPropertyMedia } = require('../middlewares/property/propertyMediaUpload');
 
 const {
     createProperty,
@@ -23,27 +22,27 @@ router.post(
     '/create',
     authenticateUser,
     isLandlord,
-    upload.fields([{ name: 'images', maxCount: 10 }, { name: 'videos', maxCount: 5 }]),
+    uploadPropertyMedia,
     createProperty
 );
 
-// Get all properties (public)
+
 router.get('/', getAllProperties);
 
-// Get single property by ID (public)
+
 router.get('/:id', getOneProperty);
 
-// Update Property (Landlord and Property Owner Only)
+
 router.put(
     '/:id',
     authenticateUser,
     isLandlord,
     isPropertyOwner,
-    upload.fields([{ name: 'images', maxCount: 10 }, { name: 'videos', maxCount: 5 }]),
+    uploadPropertyMedia, // Use the imported middleware directly
     updateProperty
 );
 
-// Delete Property (Landlord and Property Owner Only)
+
 router.delete(
     '/:id',
     authenticateUser,
@@ -51,7 +50,5 @@ router.delete(
     isPropertyOwner,
     deleteProperty
 );
-
-
 
 module.exports = router;
