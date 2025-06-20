@@ -5,7 +5,7 @@ import { AuthContext } from "../auth/AuthProvider.jsx";
 import HomePage from "../pages/home.jsx";
 import RegisterPage from "../pages/signup.jsx";
 import LoginPage from "../pages/login.jsx";
-import ForgetPasswordPage from "../pages/RequestPassword.Jsx"
+import ForgetPasswordPage from "../pages/RequestPassword.jsx"
 import ResetPasswordWithTokenPage from "../pages/ResetPassword.jsx";
 import AgreementPage from "../pages/agreement.jsx";
 import PropertyPage from "../pages/property.jsx";

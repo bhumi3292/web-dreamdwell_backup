@@ -9,19 +9,9 @@ export const loginUserApi = (data) => {
     return axios.post("/auth/login", data);
 };
 
-//
-// export const sendPasswordResetLinkApi = (data) => {
-//     return axios.post('/auth/forgot-password/send-link', data);
-// };
-//
-// export const resetPasswordApi = (token, data) => {
-//     return axios.post(`/auth/reset-password/${token}`, data);
-// };
+export const sendPasswordResetLinkApi = (data) => {
+    return axios.post('/auth/request-reset/send-link', data);
+};
 
-
-export const requestResetPasswordApi = async (data) =>
-    axios.post("/auth/request-reset", data);
-
-
-export const resetPasswordApi = async (data,token) =>
-    axios.post("/auth/reset-password"+ token, data);
+export const resetPasswordApi = async (data, token) => // Corrected token concatenation
+    axios.post(`/auth/reset-password/${token}`, data);

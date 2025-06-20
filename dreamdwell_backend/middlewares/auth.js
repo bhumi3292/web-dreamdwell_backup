@@ -11,7 +11,6 @@ const authenticateUser = (req, res, next) => {
     const token = authHeader.split(" ")[1];
 
     try {
-        // Verify token and attach user info to request object
         req.user = jwt.verify(token, process.env.JWT_SECRET);
         next();
     } catch (err) {

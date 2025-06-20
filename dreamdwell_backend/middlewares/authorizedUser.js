@@ -1,7 +1,7 @@
 const jwt = require("jsonwebtoken");
 const Property = require("../models/Property");
 
-
+// Define authenticateUser function
 const authenticateUser = (req, res, next) => {
     const authHeader = req.headers.authorization;
 
@@ -26,7 +26,7 @@ const authenticateUser = (req, res, next) => {
     }
 };
 
-// ✅ Allow only landlords
+// Define isLandlord function
 const isLandlord = (req, res, next) => {
     if (req.user && req.user.role === "Landlord") {
         return next();
@@ -34,7 +34,7 @@ const isLandlord = (req, res, next) => {
     return res.status(403).json({ success: false, message: "Access denied: Landlord only" });
 };
 
-// ✅ Check if the authenticated landlord owns the property
+// Define isPropertyOwner function
 const isPropertyOwner = async (req, res, next) => {
     try {
         const property = await Property.findById(req.params.id);
@@ -53,6 +53,7 @@ const isPropertyOwner = async (req, res, next) => {
     }
 };
 
+// Export the functions AFTER they have been defined
 module.exports = {
     authenticateUser,
     isLandlord,

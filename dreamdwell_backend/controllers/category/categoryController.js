@@ -3,7 +3,6 @@ const Category = require("../../models/Category");
 // CREATE Category
 exports.createCategory = async (req, res) => {
   try {
-    const filepath = req.file?.path;
     const { name } = req.body;
 
     const existingCategory = await Category.findOne({ category_name: name });
@@ -11,7 +10,7 @@ exports.createCategory = async (req, res) => {
       return res.status(400).json({ success: false, message: "Category already exists" });
     }
 
-    const category = new Category({ category_name: name, filepath });
+    const category = new Category({ category_name: name });
     await category.save();
 
     res.status(201).json({ success: true, message: "Category created successfully", category });
@@ -48,12 +47,9 @@ exports.getCategoryById = async (req, res) => {
 // UPDATE Category
 exports.updateCategory = async (req, res) => {
   try {
-    const filepath = req.file?.path;
-
     const data = {
       category_name: req.body.name,
     };
-    if (filepath) data.filepath = filepath;
 
     const updatedCategory = await Category.findByIdAndUpdate(req.params.id, data, {
       new: true,

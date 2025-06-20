@@ -1,8 +1,7 @@
 import {
     registerUserApi,
     loginUserApi,
-    // --- UPDATED IMPORTS FOR LINK-BASED PASSWORD RESET ---
-    //sendPasswordResetLinkApi,
+    sendPasswordResetLinkApi, // Ensure this is imported
     resetPasswordApi
 } from "../api/authApi";
 
@@ -25,37 +24,26 @@ export const loginUserService = async (formData) => {
     }
 };
 
-// // --- UPDATED SERVICE FUNCTION FOR SENDING PASSWORD RESET LINK ---
-// export const sendPasswordResetLinkService = async (formData) => { // Renamed from sendOtpForPasswordResetService
-//     try {
-//         // formData is expected to contain { email: "user@example.com" }
-//         const response = await sendPasswordResetLinkApi(formData);
-//         return response.data;
-//     } catch (err) {
-//         throw err.response?.data || { message: "Failed to send password reset link. Please try again later." };
-//     }
-// };
-//
-// // --- UPDATED SERVICE FUNCTION FOR RESETTING PASSWORD WITH TOKEN ---
-// export const resetPasswordService = async (token, formData) => {
-//     try {
-//
-//         const response = await resetPasswordApi(token, formData);
-//         return response.data;
-//     } catch (err) {
-//         throw err.response?.data || { message: "Failed to reset password. Invalid link or other error." };
-//     }
-// };
-
-//====================PForget PAssword
-export  const  requestResetPasswordService = async (formData) => {
+// --- UPDATED SERVICE FUNCTION FOR SENDING PASSWORD RESET LINK ---
+export const sendPasswordResetLinkService = async (formData) => {
     try {
-        const  response = await resetPasswordApi(formData);
+        // formData is expected to contain { email: "user@example.com" }
+        const response = await sendPasswordResetLinkApi(formData);
         return response.data;
-    }catch (err){
-        throw err.response?.data|| { message: "Request  Password Failed" };
+    } catch (err) {
+        throw err.response?.data || { message: "Failed to send password reset link. Please try again later." };
     }
-}
+};
+
+// //====================PForget PAssword
+// export  const  requestResetPasswordService = async (formData) => {
+//     try {
+//         const  response = await resetPasswordApi(formData); // This was incorrect
+//         return response.data;
+//     }catch (err){
+//         throw err.response?.data|| { message: "Request  Password Failed" };
+//     }
+// }
 
 export  const  resetPasswordService = async (formData,token) => {
     try {

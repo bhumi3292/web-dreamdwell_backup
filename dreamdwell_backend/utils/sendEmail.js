@@ -1,19 +1,7 @@
 const nodemailer = require('nodemailer');
 require('dotenv').config(); // Ensure dotenv is loaded here as well for email credentials
 
-// Create a transporter object using the default SMTP transport
-const transporter = nodemailer.createTransport({
-    host: 'smtp.gmail.com', // For Gmail
-    port: 587,
-    secure: false, // true for 465, false for other ports
-    auth: {
-        user: process.env.EMAIL_USER, // Your Gmail address from .env
-        pass: process.env.EMAIL_PASS  // Your App Password from .env
-    },
-    tls: {
-        rejectUnauthorized: false // Avoids "self signed certificate in certificate chain" errors
-    }
-});
+
 
 // Function to send email
 const sendEmail = async (to, subject, text, html) => {

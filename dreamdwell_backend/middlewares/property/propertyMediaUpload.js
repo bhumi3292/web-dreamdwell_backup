@@ -1,11 +1,11 @@
-
+// middlewares/property/uploads.js
 const multer = require("multer");
 const path = require("path");
 
 // Storage engine
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, "uploads/"); // Create this folder in your project root
+        cb(null, "uploads/"); // Ensure this exists
     },
     filename: function (req, file, cb) {
         const uniqueName = Date.now() + "-" + Math.round(Math.random() * 1e9) + path.extname(file.originalname);
@@ -29,11 +29,9 @@ const upload = multer({
     limits: { fileSize: 100 * 1024 * 1024 } // Max 100 MB
 });
 
-// Upload handler
 const uploadPropertyMedia = upload.fields([
     { name: "images", maxCount: 10 },
     { name: "videos", maxCount: 5 }
 ]);
 
 module.exports = { uploadPropertyMedia };
-

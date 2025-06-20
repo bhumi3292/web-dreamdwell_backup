@@ -1,6 +1,6 @@
 import {
     getAllProductApi,
-    createOneProductApi,
+    createPropertyApi, // Updated import
     getOneProductApi,
     updateOneProductApi
 } from "../api/productApi.js";
@@ -16,12 +16,12 @@ export const getAllProductService = async (params) => {
     }
 };
 
-export const createOneProductService = async (data) => {
+export const createPropertyService = async (data) => { // Renamed function
     try {
-        const response = await createOneProductApi(data);
+        const response = await createPropertyApi(data); // Call updated API function
         return response.data;
     } catch (err) {
-        throw err.response?.data || { message: "Product creation failed" };
+        throw err.response?.data || { message: "Property creation failed" }; // Updated message
     }
 };
 

@@ -17,12 +17,14 @@ const propertySchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    bedrooms: { type: Number, required: false },
+    bathrooms: { type: Number, required: false },
     categoryId: {
         type: mongoose.Schema.ObjectId,
         ref: "Category",
         required: true,
     },
-    pricePerMonth: {
+    price: {
         type: Number,
         required: true,
     },

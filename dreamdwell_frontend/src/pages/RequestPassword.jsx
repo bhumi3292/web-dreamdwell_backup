@@ -1,16 +1,17 @@
 // frontend/src/pages/ForgetPassword.jsx
 import React from "react";
-import Navbar from "../layouts/Navbar"; // Make sure this path is correct
-import logo from "../assets/logo.png"; // Make sure this path is correct
+import Navbar from "../layouts/Navbar";
+import logo from "../assets/logo.png";
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import ResetPasswordWithToken from "./ResetPassword.jsx";
 // <<<--- CRITICAL CORRECTION HERE: Import useSendPasswordResetLink from useAuthHooks
-import { useSendPasswordResetLink } from '../hooks/useAuthHooks';
+//import { useSendPasswordResetLink } from '../hooks/useAuthHooks';
 
 function ForgetPassword() {
-    const { mutate: sendLinkMutation, isLoading: isSendingLink } = useSendPasswordResetLink();
+    const { mutate: sendLinkMutation, isLoading: isSendingLink } = ResetPasswordWithToken();
 
     const formik = useFormik({
         initialValues: {
