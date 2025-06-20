@@ -9,9 +9,9 @@ const extractFilePaths = (files) => {
 // CREATE Property
 exports.createProperty = async (req, res) => {
     try {
-        const { title, description, location, pricePerMonth, type, categoryId } = req.body;
+        const { title, description, location, pricePerMonth, categoryId } = req.body;
 
-        if (!title || !description || !location || !pricePerMonth || !type || !categoryId) {
+        if (!title || !description || !location || !pricePerMonth || !categoryId) {
             return res.status(400).json({ success: false, message: "Missing required fields" });
         }
 
@@ -23,7 +23,6 @@ exports.createProperty = async (req, res) => {
             description,
             location,
             pricePerMonth,
-            type,
             categoryId,
             images,
             videos,

@@ -1,13 +1,12 @@
 const mongoose = require("mongoose");
 
 const propertySchema = new mongoose.Schema({
-    image:{
-        type:String,
-        require:true,
+    images:{
+        type:[String],
+        required:true,
     },
-    video: {
-        type: String,
-        required: false
+    videos: {
+        type: [String],
     },
     title: {
         type: String,
