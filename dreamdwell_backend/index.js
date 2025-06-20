@@ -9,6 +9,7 @@ const connectDB = require("./config/db");
 const authRoutes = require("./routes/authRoutes");
 const propertyRoutes = require("./routes/propertyRoutes");
 const bookingRoutes = require("./routes/bookingRoutes");
+const categoryRoutes = require("./routes/categoryRoutes");
 
 const app = express();
 
@@ -31,6 +32,7 @@ connectDB()
 app.use("/api/auth", authRoutes);            // Registration, Login, Reset
 app.use("/api/properties", propertyRoutes);  // Property CRUD
 app.use("/api/bookings", bookingRoutes);     // Booking System (if implemented)
+app.use("/api/categories", categoryRoutes);
 
 // Health check
 app.get("/", (req, res) => {
