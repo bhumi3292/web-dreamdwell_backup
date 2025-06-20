@@ -1,47 +1,58 @@
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 require("dotenv").config();
-const connectDB = require("../dreamdwell_backend/config/db");
 
-const authRoutes = require("../dreamdwell_backend/routes/authRoutes");
-const propertyRoutes = require("../dreamdwell_backend/routes/propertyRoutes");
+const connectDB = require("./config/db");
+
+// Route imports
+const authRoutes = require("./routes/authRoutes");
+const propertyRoutes = require("./routes/propertyRoutes");
 const bookingRoutes = require("./routes/bookingRoutes");
- const adminUserRoutes = require("../dreamdwell_backend/routes/userRoutes");
 
 const app = express();
+
+// ========== Middleware ==========
 app.use(cors());
 app.use(express.json());
 
-// Connect to MongoDB
+// Serve static files (e.g., uploaded images/videos)
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+// ========== DB Connection ==========
 connectDB()
     .then(() => console.log("MongoDB connected"))
     .catch((err) => {
-        console.error("Failed to connect to DB:", err);
+        console.error(" Failed to connect to DB:", err);
         process.exit(1);
     });
 
-// Routes
-app.use("/api/auth", authRoutes);
-app.use("/api/properties", propertyRoutes);
-app.use("/api/bookings", bookingRoutes);
+// ========== API Routes ==========
+app.use("/api/auth", authRoutes);            // Registration, Login, Reset
+app.use("/api/properties", propertyRoutes);  // Property CRUD
+app.use("/api/bookings", bookingRoutes);     // Booking System (if implemented)
 
-
-// Health check endpoint
+// Health check
 app.get("/", (req, res) => {
     res.send("DreamDwell backend running...");
 });
 
-// Global error handler
+// ========== Global Error Handler ==========
 app.use((err, req, res, _next) => {
-    console.error("Error:", err.stack);
+    console.error("Unhandled Error:", err.stack);
     res.status(500).json({
+        success: false,
         message: "Something went wrong",
         error: err.message || "Unknown error",
     });
 });
 
-// Start the server
-const PORT = process.env.PORT || 3001;
-app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
-});
+// ========== Start Server ==========
+if (require.main === module) {
+    const PORT = process.env.PORT || 3001;
+    app.listen(PORT, () => {
+        console.log(` Server running on http://localhost:${PORT}`);
+    });
+}
+
+module.exports = app;

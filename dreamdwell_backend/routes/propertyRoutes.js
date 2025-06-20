@@ -1,13 +1,53 @@
-const express = require("express");
+const express = require('express');
 const router = express.Router();
-const propertyController = require("../controllers/propertyController");
-const { protect } = require("../middlewares/auth");
 
-// Create a property (protected, landlord only)
-router.post("/", protect, propertyController.createProperty);
+const {
+    createProperty,
+    getAllProperties,
+    getOneProperty,
+    updateProperty,
+    deleteProperty
+} = require("../controllers/property/propertyController");
 
-// Get all properties (public)
-router.get("/", propertyController.getAllProperties);
+const upload = require('../middlewares/property/multer');
+const {
+    authenticateUser,
+    isLandlord,
+    isPropertyOwner
+} = require('../middlewares/authorizedUser');
 
-// Export router
+// ✅ Create Property (Landlord Only)
+router.post(
+    '/create',
+    authenticateUser,
+    isLandlord,
+    upload.fields([{ name: 'images' }, { name: 'videos' }]),
+    createProperty
+);
+
+
+router.get('/', getAllProperties);
+
+
+router.get('/:id', getOneProperty);
+
+
+router.put(
+    '/:id',
+    authenticateUser,
+    isLandlord,
+    isPropertyOwner,
+    upload.fields([{ name: 'images' }, { name: 'videos' }]),
+    updateProperty
+);
+
+
+router.delete(
+    '/:id',
+    authenticateUser,
+    isLandlord,
+    isPropertyOwner,
+    deleteProperty
+);
+
 module.exports = router;

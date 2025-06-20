@@ -5,13 +5,21 @@ const propertySchema = new mongoose.Schema({
         type:String,
         require:true,
     },
-
+    video: {
+        type: String,
+        required: false
+    },
     title: {
         type: String,
         required: true,
     },
     location: {
         type: String,
+        required: true,
+    },
+    categoryId: {
+        type: mongoose.Schema.ObjectId,
+        ref: "Category",
         required: true,
     },
     pricePerMonth: {
@@ -22,10 +30,6 @@ const propertySchema = new mongoose.Schema({
     landlord: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User",
-    },
-    available: {
-        type: Boolean,
-        default: true,
     },
 }, { timestamps: true });
 
