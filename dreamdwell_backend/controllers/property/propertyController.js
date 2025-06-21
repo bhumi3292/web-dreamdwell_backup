@@ -1,18 +1,22 @@
 const Property = require("../../models/Property");
+const Category = require("../../models/Category");
 
-// Helper: extract file paths from multer uploads
 const extractFilePaths = (files) => {
     if (!files) return [];
     return files.map(file => file.path || file.filename);
 };
 
-// CREATE Property
 exports.createProperty = async (req, res) => {
     try {
         const { title, description, location, price, type, categoryId, bedrooms, bathrooms } = req.body;
 
         if (!title || !description || !location || !price || !type || !categoryId) {
             return res.status(400).json({ success: false, message: "Missing required fields" });
+        }
+
+        const category = await Category.findById(categoryId);
+        if (!category) {
+            return res.status(400).json({ success: false, message: "Invalid category" });
         }
 
         const images = extractFilePaths(req.files?.images);
@@ -22,11 +26,11 @@ exports.createProperty = async (req, res) => {
             title,
             description,
             location,
-            price, // changed from pricePerMonth
+            price,
             type,
             categoryId,
-            bedrooms, // new field
-            bathrooms, // new field
+            bedrooms,
+            bathrooms,
             images,
             videos,
             landlord: req.user._id
@@ -36,12 +40,11 @@ exports.createProperty = async (req, res) => {
 
         res.status(201).json({ success: true, message: "Property created", data: property });
     } catch (err) {
-        console.error("Create error:", err.message);
+        console.error("Create property error:", err.message);
         res.status(500).json({ success: false, message: "Server error" });
     }
 };
 
-// GET All Properties with Pagination + Search
 exports.getAllProperties = async (req, res) => {
     try {
         const { page = 1, limit = 10, search = "" } = req.query;
@@ -53,7 +56,7 @@ exports.getAllProperties = async (req, res) => {
         }
 
         const properties = await Property.find(filter)
-            .populate("categoryId", "category_name")
+            .populate("categoryId", "category_name types")
             .populate("landlord", "fullName email")
             .skip(skip)
             .limit(Number(limit));
@@ -72,15 +75,15 @@ exports.getAllProperties = async (req, res) => {
             },
         });
     } catch (err) {
-        res.status(500).json({ success: false, message: "Server error", error: err.message });
+        console.error("Get properties error:", err.message);
+        res.status(500).json({ success: false, message: "Server error" });
     }
 };
 
-// GET Single Property
 exports.getOneProperty = async (req, res) => {
     try {
         const property = await Property.findById(req.params.id)
-            .populate("categoryId", "category_name")
+            .populate("categoryId", "category_name types")
             .populate("landlord", "fullName email");
 
         if (!property) {
@@ -89,11 +92,11 @@ exports.getOneProperty = async (req, res) => {
 
         res.status(200).json({ success: true, data: property });
     } catch (err) {
-        res.status(500).json({ success: false, message: "Server error", error: err.message });
+        console.error("Get property error:", err.message);
+        res.status(500).json({ success: false, message: "Server error" });
     }
 };
 
-// UPDATE Property
 exports.updateProperty = async (req, res) => {
     try {
         const property = await Property.findById(req.params.id);
@@ -104,6 +107,14 @@ exports.updateProperty = async (req, res) => {
 
         if (property.landlord.toString() !== req.user._id.toString()) {
             return res.status(403).json({ success: false, message: "Unauthorized access" });
+        }
+
+        const { categoryId } = req.body;
+        if (categoryId) {
+            const category = await Category.findById(categoryId);
+            if (!category) {
+                return res.status(400).json({ success: false, message: "Invalid category" });
+            }
         }
 
         const images = extractFilePaths(req.files?.images);
@@ -117,11 +128,11 @@ exports.updateProperty = async (req, res) => {
 
         res.status(200).json({ success: true, message: "Property updated", data: property });
     } catch (err) {
-        res.status(500).json({ success: false, message: "Server error", error: err.message });
+        console.error("Update property error:", err.message);
+        res.status(500).json({ success: false, message: "Server error" });
     }
 };
 
-// DELETE Property
 exports.deleteProperty = async (req, res) => {
     try {
         const property = await Property.findById(req.params.id);
@@ -138,6 +149,7 @@ exports.deleteProperty = async (req, res) => {
 
         res.status(200).json({ success: true, message: "Property deleted" });
     } catch (err) {
-        res.status(500).json({ success: false, message: "Server error", error: err.message });
+        console.error("Delete property error:", err.message);
+        res.status(500).json({ success: false, message: "Server error" });
     }
 };

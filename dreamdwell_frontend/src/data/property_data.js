@@ -55,5 +55,23 @@ export const properties = [
             verified: true,
         },
     },
+    {
+        id: 1,
+        title: "Modern Villa with Pool",
+        location: "Miami, FL",
+        price: 350,
+        rating: 4.8,
+        reviews: 92,
+        type: "villa",
+        guests: 6,
+        bedrooms: 3,
+        bathrooms: 2,
+        amenities: ["Pool", "Wi-Fi", "Air Conditioning", "Kitchen"],
+        images: ["src/assets/9k.png"],
+        host: {
+            name: "Sophie",
+            verified: true,
+        },
+    },
     // Add more properties as needed
 ];

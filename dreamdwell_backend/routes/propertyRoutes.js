@@ -1,7 +1,5 @@
 const express = require('express');
 const router = express.Router();
-// Import uploadPropertyMedia from the correct path
-const { uploadPropertyMedia } = require('../middlewares/property/propertyMediaUpload');
 
 const {
     createProperty,
@@ -9,7 +7,7 @@ const {
     getOneProperty,
     updateProperty,
     deleteProperty
-} = require("../controllers/property/propertyController");
+} = require('../controllers/property/propertyController');
 
 const {
     authenticateUser,
@@ -17,32 +15,34 @@ const {
     isPropertyOwner
 } = require('../middlewares/authorizedUser');
 
-// Create Property (Landlord Only)
+const { uploadPropertyMedia } = require('../middlewares/property/propertyMediaUpload');
+
+// Create Property (Landlord only)
 router.post(
-    '/create',
+    '/',
     authenticateUser,
     isLandlord,
     uploadPropertyMedia,
     createProperty
 );
 
-
+// Get all properties (public)
 router.get('/', getAllProperties);
 
-
+// Get single property (public)
 router.get('/:id', getOneProperty);
 
-
+// Update property (Landlord + owner)
 router.put(
     '/:id',
     authenticateUser,
     isLandlord,
     isPropertyOwner,
-    uploadPropertyMedia, // Use the imported middleware directly
+    uploadPropertyMedia,
     updateProperty
 );
 
-
+// Delete property (Landlord + owner)
 router.delete(
     '/:id',
     authenticateUser,

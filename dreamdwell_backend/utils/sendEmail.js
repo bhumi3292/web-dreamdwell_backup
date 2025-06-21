@@ -1,17 +1,33 @@
 const nodemailer = require('nodemailer');
-require('dotenv').config(); // Ensure dotenv is loaded here as well for email credentials
+require('dotenv').config();
 
+const isTest = process.env.NODE_ENV === 'test';
 
+const transporter = nodemailer.createTransport({
+    service: process.env.EMAIL_SERVICE || 'gmail',
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS
+    },
+    tls: {
+        rejectUnauthorized: false // Allow self-signed certs in dev/test
+    }
+});
 
 // Function to send email
 const sendEmail = async (to, subject, text, html) => {
+    if (isTest) {
+        console.log(`Mock email sent to ${to} with subject "${subject}"`);
+        return { messageId: 'mock-id' }; // Fake result for test
+    }
+
     try {
         const mailOptions = {
-            from: `"DreamDwell Support" <${process.env.EMAIL_USER}>`, // Sender address
-            to: to, // List of receivers
-            subject: subject, // Subject line
-            text: text, // Plain text body
-            html: html, // HTML body
+            from: `"DreamDwell Support" <${process.env.EMAIL_USER}>`,
+            to,
+            subject,
+            text,
+            html
         };
 
         let info = await transporter.sendMail(mailOptions);

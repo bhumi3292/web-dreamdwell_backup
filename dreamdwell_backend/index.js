@@ -5,11 +5,11 @@ require("dotenv").config();
 
 const connectDB = require("./config/db");
 
-// Route imports
+// Import routes
 const authRoutes = require("./routes/authRoutes");
 const propertyRoutes = require("./routes/propertyRoutes");
-const bookingRoutes = require("./routes/bookingRoutes");
-const categoryRoutes = require('./routes/categoryRoutes'); // Import category routes
+const categoryRoutes = require("./routes/categoryRoutes");
+const bookingRoutes = require("./routes/bookingRoutes"); // optional
 
 const app = express();
 
@@ -17,22 +17,22 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Serve static files (e.g., uploaded images/videos)
+// Static files (media)
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// ========== DB Connection ==========
+// ========== Connect DB ==========
 connectDB()
     .then(() => console.log("MongoDB connected"))
     .catch((err) => {
-        console.error(" Failed to connect to DB:", err);
+        console.error("Failed to connect to DB:", err);
         process.exit(1);
     });
 
 // ========== API Routes ==========
-app.use("/api/auth", authRoutes);            // Registration, Login, Reset
-app.use("/api/properties", propertyRoutes);  // Property CRUD
-app.use("/api/category", categoryRoutes);    // Category CRUD
-app.use("/api/bookings", bookingRoutes);     // Booking System (if implemented)
+app.use("/api/auth", authRoutes);
+app.use("/api/properties", propertyRoutes);
+app.use("/api/category", categoryRoutes);
+app.use("/api/bookings", bookingRoutes); // optional, if implemented
 
 // Health check
 app.get("/", (req, res) => {
@@ -53,7 +53,7 @@ app.use((err, req, res, _next) => {
 if (require.main === module) {
     const PORT = process.env.PORT || 3001;
     app.listen(PORT, () => {
-        console.log(` Server running on http://localhost:${PORT}`);
+        console.log(`Server running on http://localhost:${PORT}`);
     });
 }
 
