@@ -10,10 +10,9 @@ let categoryId;
 let resetToken;
 
 beforeAll(async () => {
-    // Clear database before tests
     await mongoose.connection.dropDatabase();
 
-    //=============== Register landlord
+    // Register landlord
     const registerRes = await request(app).post("/api/auth/register").send({
         fullName: "Test Landlord",
         email: "landlord@test.com",
@@ -24,7 +23,7 @@ beforeAll(async () => {
     });
     expect(registerRes.statusCode).toBe(201);
 
-    // -------Login landlord to get token
+    // Login landlord
     const loginRes = await request(app).post("/api/auth/login").send({
         email: "landlord@test.com",
         password: "password123"
@@ -32,25 +31,23 @@ beforeAll(async () => {
     expect(loginRes.statusCode).toBe(200);
     landlordToken = loginRes.body.token;
 
-    // Clean test user before running user tests
+    // Clean up any existing test user
     await User.deleteOne({ email: "ram123@gmail.com" });
 });
 
 afterAll(async () => {
     await mongoose.disconnect();
 });
-//============================================================================================
+
 describe("User Authentication API", () => {
     test("should validate missing fields while creating user", async () => {
-        const res = await request(app)
-            .post("/api/auth/register")
-            .send({
-                fullName: "Ram Bahadur",
-                email: "ram123@gmail.com",
-                phoneNumber: "9800000000",
-                stakeholder: "Tenant"
-                // missing password + confirmPassword
-            });
+        const res = await request(app).post("/api/auth/register").send({
+            fullName: "Ram Bahadur",
+            email: "ram123@gmail.com",
+            phoneNumber: "9800000000",
+            stakeholder: "Tenant"
+            // missing password + confirmPassword
+        });
 
         expect(res.statusCode).toBe(400);
         expect(res.body.success).toBe(false);
@@ -58,16 +55,14 @@ describe("User Authentication API", () => {
     });
 
     test("should create a user with all fields", async () => {
-        const res = await request(app)
-            .post("/api/auth/register")
-            .send({
-                fullName: "Ram Singh",
-                email: "ram123@gmail.com",
-                phoneNumber: "9800000000",
-                stakeholder: "Tenant",
-                password: "password123",
-                confirmPassword: "password123"
-            });
+        const res = await request(app).post("/api/auth/register").send({
+            fullName: "Ram Singh",
+            email: "ram123@gmail.com",
+            phoneNumber: "9800000000",
+            stakeholder: "Tenant",
+            password: "password123",
+            confirmPassword: "password123"
+        });
 
         expect(res.statusCode).toBe(201);
         expect(res.body.success).toBe(true);
@@ -75,19 +70,17 @@ describe("User Authentication API", () => {
     });
 
     test("should login a user with valid credentials", async () => {
-        const res = await request(app)
-            .post("/api/auth/login")
-            .send({
-                email: "ram123@gmail.com",
-                password: "password123"
-            });
+        const res = await request(app).post("/api/auth/login").send({
+            email: "ram123@gmail.com",
+            password: "password123"
+        });
 
         expect(res.statusCode).toBe(200);
         expect(res.body.success).toBe(true);
-        expect(res.body.token).toEqual(expect.any(String));
+        expect(typeof res.body.token).toBe("string");
     });
 });
-//==============================================================================
+
 describe("Password Reset Flow", () => {
     test("should request password reset link", async () => {
         const res = await request(app)
@@ -98,7 +91,6 @@ describe("Password Reset Flow", () => {
         expect(res.body.success).toBe(true);
         expect(res.body.message).toMatch(/password reset link has been sent/i);
 
-        // Simulate getting the reset token (what would be emailed)
         const user = await User.findOne({ email: "ram123@gmail.com" });
         resetToken = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
     });
@@ -129,7 +121,6 @@ describe("Password Reset Flow", () => {
         expect(res.body.message).toMatch(/invalid reset token/i);
     });
 });
-//========================================================================================================
 
 describe("Category API", () => {
     test("should create a new category", async () => {
@@ -140,8 +131,8 @@ describe("Category API", () => {
 
         expect(res.statusCode).toBe(201);
         expect(res.body.success).toBe(true);
-        expect(res.body.category.category_name).toBe("Apartment");
-        categoryId = res.body.category._id;
+        expect(res.body.data.category_name).toBe("Apartment");
+        categoryId = res.body.data._id;
     });
 
     test("should not create duplicate category", async () => {
@@ -151,6 +142,7 @@ describe("Category API", () => {
             .send({ name: "Apartment" });
 
         expect(res.statusCode).toBe(400);
+        expect(res.body.success).toBe(false);
     });
 
     test("should fetch all categories", async () => {
@@ -162,12 +154,14 @@ describe("Category API", () => {
     test("should fetch category by ID", async () => {
         const res = await request(app).get(`/api/category/${categoryId}`);
         expect(res.statusCode).toBe(200);
+        expect(res.body.success).toBe(true);
         expect(res.body.data._id).toBe(categoryId);
     });
 
-    test("should return 404 for invalid category ID", async () => {
+    test("should return 404 for non-existent category ID", async () => {
         const res = await request(app).get(`/api/category/${new mongoose.Types.ObjectId()}`);
         expect(res.statusCode).toBe(404);
+        expect(res.body.success).toBe(false);
     });
 
     test("should update a category", async () => {
@@ -177,7 +171,8 @@ describe("Category API", () => {
             .send({ name: "Updated Apartment" });
 
         expect(res.statusCode).toBe(200);
-        expect(res.body.category.category_name).toBe("Updated Apartment");
+        expect(res.body.success).toBe(true);
+        expect(res.body.data.category_name).toBe("Updated Apartment");
     });
 
     test("should delete a category", async () => {
@@ -187,6 +182,7 @@ describe("Category API", () => {
             .set("Authorization", `Bearer ${landlordToken}`);
 
         expect(res.statusCode).toBe(200);
+        expect(res.body.success).toBe(true);
     });
 
     test("should 404 deleting non-existent category", async () => {
@@ -194,11 +190,10 @@ describe("Category API", () => {
             .delete(`/api/category/${new mongoose.Types.ObjectId()}`)
             .set("Authorization", `Bearer ${landlordToken}`);
         expect(res.statusCode).toBe(404);
+        expect(res.body.success).toBe(false);
     });
 });
 
-
-//===========================================================================================================
 describe("Property API", () => {
     test("should get all properties", async () => {
         const res = await request(app).get("/api/properties");
@@ -211,5 +206,6 @@ describe("Property API", () => {
             .delete(`/api/properties/${new mongoose.Types.ObjectId()}`)
             .set("Authorization", `Bearer ${landlordToken}`);
         expect(res.statusCode).toBe(404);
+        expect(res.body.success).toBe(false);
     });
 });
